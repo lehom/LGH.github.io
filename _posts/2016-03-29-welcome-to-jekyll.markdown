@@ -4,7 +4,9 @@ title:  "《艾依格》IOS端项目总结"
 date:   2016-03-29 22:01:46 +0800
 categories: jekyll update
 ---
-项目 
+项目 艾依格项目
+十大发十大发啦发
+的说法分开了，德国撒了个阿迪立刻感觉拉客供 gear；了课的撒娇开始的噶啊的根深蒂固了
 
 Jekyll also offers powerful support for code snippets:
 
