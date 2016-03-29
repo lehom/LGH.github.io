@@ -1,2 +1,0 @@
-# lehom.github.io
-Blog
