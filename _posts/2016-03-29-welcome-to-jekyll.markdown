@@ -1,12 +1,35 @@
 ---
 layout: post
-title:  "《艾依格》IOS端项目总结"
+title:  "《艾家网》IOS端项目总结"
 date:   2016-03-29 22:01:46 +0800
 categories: jekyll update
 ---
-项目 艾依格项目
-十大发十大发啦发
-的说法分开了，德国撒了个阿迪立刻感觉拉客供 gear；了课的撒娇开始的噶啊的根深蒂固了
+
+《艾家网》是一个外包项目，做了差不多两个月，总体来说做的还是比较认真的。下面从几个方面去对这个项目做一个总结。
+  
+###项目目录结构
+艾家网的目录结构如下：
+	
+    ├─ AppDelegate
+    ├─ ViewControllers
+    ├─ Sections			
+    ├─ Managers
+    ├─ APIRequests
+    ├─ Models
+    ├─ General
+    ├─ Stores
+    ├─ Helpers
+    ├─ Macros
+    ├─ Config
+    ├─ Vendors
+    ├─ Resources
+    
+这种分类，我把它称为按 “角色” 分类，因为我是在是找不出更贴切的词语来描述这种分类方式。比如xxxViewController 它的角色为ViewControllers.  AEGPageFlowManager 角色为 Manager。
+
+* ####AppDelegate
+这个目录存放的是 AppDelegate.h(.m) 和 文件，是整个app的入口文件，所以单独拿出来。还有AppDelegate+VendorAccessory.h(.m) 这个文件放的是一些需要在入口添加的辅助设置，比如：setUpYTKNetwork ，setUpUMengSocial。
+* ####ViewControllers
+这个目录存放
 
 Jekyll also offers powerful support for code snippets:
 
