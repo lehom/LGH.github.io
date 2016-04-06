@@ -49,30 +49,64 @@ categories: jekyll update
 General 顾名思义，一般的，通用的，所以在这个文件中会放一些通用的模块和架构层的模块如 TOWebViewController，通用的webViewController, DDPopupView, JHTableViewAdapter, LGHCollectionViewAdapter. 还有category JHTableViewController+MJRefresh， UIViewController+MBProgressHUD 这些同样适用于其它工程的公有的部分。
 
 * ####  Stores
-这个文件现在只存了一个AEGAccountStorage。这是一个Account（账户），它有一个AEGUserProfile的属性，这个类相当于userDetail.其实Account 与UserProfile的关系相当于User与userDetail的关系，为了更加贴切的表示和区分这两者的功能我把名字改了，AEGAccountStorage 是一个帐户，他有一个个人简历AEGUserProfile属性。但是这个账号AEGAccountStorage通过- (instancetype)initWithAccountId:(NSNumber *)accountId 初始化，通过- (BOOL)saveUserProfile:(AEGUserProfile *)userProfile来保存UserProfile 到手机，这样下次再没有网络的启动下也能拿到用户信息UserProfile。
+这个文件现在只存了一个AEGAccountStorage。这是一个Account（账户），它有一个AEGUserProfile的属性，这个类相当于userDetail.其实Account 与UserProfile的关系相当于User与userDetail的关系(user指的是账号，而userDetail指的是账号里面的个人信息，user包含userDetail)，为了更加贴切的表示和区分这两者的功能我把名字改了，AEGAccountStorage 是一个帐户，他有一个个人简历AEGUserProfile属性。但是这个账号AEGAccountStorage通过- (instancetype)initWithAccountId:(NSNumber *)accountId 初始化，通过- (BOOL)saveUserProfile:(AEGUserProfile *)userProfile来保存UserProfile 到手机，这样下次再没有网络的启动下也能拿到用户信息UserProfile。
 
 * ####  Helpers
 帮助类，每个文件是相应的泪方法 如AEGFileHelper负责文件操作， AEGFormatVerifyHelper 负责手机，邮箱等的格式验证。
 
 * ####  Macros
-
-
-* ####  Config
+存放宏定义，常量，一般是常量，URLConstant，StringConstant， EnumMacro
 
 * ####  Vendors
+存放不支持pod的第三方库。
 
 * ####  Resources
+资源文件，图片，plist文件等。
 
 
-{% highlight objc %}
-NSAttributedString *attributeString2 = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"￥%@", orderDetail.Voucher] attributes:@{NSFontAttributeName: UIFontWithSize(kFontSize02), NSForegroundColorAttributeName:UIColorFromHex(kColor01)}];
-        [mutableAttributeStr appendAttributedString:attributeString2];
+## 2.同一种cell面对多种model的处理方案
+在项目实现过程中，有这样的一种场景：服务器返回多种model，但是在ui上面的体现都是一个collectionViewCell,这个collectionViewCell包含一个uiimageview 和 一个 label如下图：
+
+因为collectionView这块用的是LGHCollectionViewAdapter,跟JHTableViewAdapter一样，collectionView 也是基于mvvm，每个collectionViewCell 都相应的有一个CollectionCellModel,而CollectionCellModel 持有一个model，这个model是接口返回的model。 所以这里的解决方案是直接在客户端传model进来，，因为这里 CollectionCellModel 对外暴露的只有三个属性：model，imageurl，name。所以在CollectionCellModel 里面来判断model的类型（isKindOfClass:）来进行相应的赋值处理。类似代码如下：
+
+{% highlight ruby %}
+
+if ([self.model isKindOfClass:[AEGHouseInfo class]]) {
+        AEGHouseInfo *houseInfo = (AEGHouseInfo *)self.model;
         
-        depositInfoCellModel.voucherAttributeString = mutableAttributeStr;
-        depositInfoCellModel.refundMessage = orderDetail.RefundMessage;
-        [depositSectionModel.cellModels addObject:depositInfoCellModel];
-#=> prints 'Hi, Tom' to STDOUT.
+        self.cellModelType = AEGDesignDisplayCellModelTypeHouses;
+        self.imageURL = [NSURL URLWithString:houseInfo.PIC ? : @""];
+        self.title = houseInfo.Name;
+        
+    } else if ([self.model isKindOfClass:[AEGApartment class]]) {
+        AEGApartment *apartment = (AEGApartment *)self.model;
+        
+        self.cellModelType = AEGDesignDisplayCellModelTypeApartment;
+        self.imageURL = [self regulationImageURLWithImageURLString:apartment.ImgUrl];
+        self.title = apartment.ApartmentName;
+        
+    } else if ([self.model isKindOfClass:[AEGNationwideClassicHouseType class]]) {
+        AEGNationwideClassicHouseType *nationwideClassicHouseType = (AEGNationwideClassicHouseType *)self.model;
+        
+        self.cellModelType = AEGDesignDisplayCellModelTypeNationHouseType;
+        self.imageURL = [self regulationImageURLWithImageURLString:nationwideClassicHouseType.PIC];
+        self.title = nationwideClassicHouseType.Name;
+    } else if ([self.model isKindOfClass:[AEGHouseType class]]) {
+        AEGHouseType *houseType = (AEGHouseType *)self.model;
+        
+        self.cellModelType = AEGDesignDisplayCellModelTypeAreaHouseType;
+        self.imageURL = [self regulationImageURLWithImageURLString:houseType.LayoutPic];
+        self.title = houseType.Name;
+                
+    }
+
 {% endhighlight %}
+
+其实为了去掉if else 这里可以用策略模式，但是由于策略模式会比较繁琐，多一个策略会增加一个类。所以只好用这种方法了。而且在外面的客户端如果想要访问model，可以直接通过collectionViewCell.collectionViewCellModel.model拿到。
+
+## 3.collectionview 处理excel表格 面对各种排版。
+
+这个项目用的最多的控件事collectionview，
 
 Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
 
